@@ -1,7 +1,8 @@
 import { join } from 'path'
-import { createBot, createProvider, createFlow, addKeyword, utils } from '@builderbot/bot'
+import { createBot, createProvider, createFlow, addKeyword, utils, EVENTS } from '@builderbot/bot'
 import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
+import { processCommand, parseStudentData, CommandType, shouldParse } from './utils/commandInterpreter'
 
 const PORT = process.env.PORT ?? 3008
 
@@ -19,33 +20,47 @@ const discordFlow = addKeyword<Provider, Database>('doc').addAnswer(
     }
 )
 
-const welcomeFlow = addKeyword<Provider, Database>(['hi', 'hello', 'hola'])
-    .addAnswer(`🙌 Hello welcome to this *Chatbot*`)
-    .addAnswer(
-        [
-            'I share with you the following links of interest about the project',
-            '👉 *doc* to view the documentation',
-        ].join('\n'),
-        { delay: 800, capture: true },
-        async (ctx, { fallBack }) => {
-            if (!ctx.body.toLocaleLowerCase().includes('doc')) {
-                return fallBack('You should type *doc*')
-            }
-            return
-        },
-        [discordFlow]
-    )
+const registerAskFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_ASK_FLOW'))
+.addAnswer(`Ingrese el turno del alumno?`, { capture: true }, async (ctx, { state }) => {
+    await state.update({ schedule: ctx.body })
+});
 
 const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLOW'))
-    .addAnswer(`What is your name?`, { capture: true }, async (ctx, { state }) => {
-        await state.update({ name: ctx.body })
-    })
-    .addAnswer('What is your age?', { capture: true }, async (ctx, { state }) => {
-        await state.update({ age: ctx.body })
+    .addAnswer(`Ingrese la información del alumno?`, { capture: true }, async (ctx, { state, fallBack, gotoFlow }) => {
+        if(!shouldParse(ctx.body))
+            return gotoFlow(registerAskFlow)
+        const { student, error } = parseStudentData(ctx.body);
+        if (error) {
+            return fallBack(error);
+        }
+
+        await state.update({ student: JSON.stringify(student) })
     })
     .addAction(async (_, { flowDynamic, state }) => {
-        await flowDynamic(`${state.get('name')}, thanks for your information!: Your age: ${state.get('age')}`)
+        console.log(state.get('student'))
+        await flowDynamic(`${state.get('student')}, thanks for your information!`)
     })
+
+const welcomeFlow = addKeyword<Provider, Database>(EVENTS.WELCOME)
+    .addAction(
+        async (ctx, { flowDynamic, fallBack, gotoFlow }) => {
+            console.log(ctx.name)
+            console.log('PROCESS COMMAND')
+
+                const responseCommand = await processCommand(ctx.body) 
+
+                if(responseCommand.type == CommandType.IGNORE)
+                    return;
+
+                if(responseCommand.type == CommandType.ERROR)
+                    return fallBack(responseCommand.message)
+                
+                console.log(responseCommand)  
+                await flowDynamic(`${responseCommand.message}`)
+
+            return gotoFlow(registerFlow)
+        }
+    )
 
 const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEvent('SAMPLES')])
     .addAnswer(`💪 I'll send you a lot files...`)
