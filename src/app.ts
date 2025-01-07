@@ -76,7 +76,9 @@ const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEven
 const main = async () => {
     const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
     
-    const adapterProvider = createProvider(Provider)
+    const adapterProvider = createProvider(Provider ,{
+        writeMyself: 'host'
+    })
     const adapterDB = new Database()
 
     const { handleCtx, httpServer } = await createBot({
