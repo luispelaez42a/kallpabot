@@ -3,30 +3,49 @@ import { createBot, createProvider, createFlow, addKeyword, utils, EVENTS } from
 import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { processCommand, parseStudentData, CommandType, shouldParse } from './utils/commandInterpreter'
+import { saveStudent, getStudents } from "src/services/Students";
 
 const PORT = process.env.PORT ?? 3008
 
-const discordFlow = addKeyword<Provider, Database>('doc').addAnswer(
-    ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
-        '\n'
-    ),
-    { capture: true },
-    async (ctx, { gotoFlow, flowDynamic }) => {
-        if (ctx.body.toLocaleLowerCase().includes('yes')) {
-            return gotoFlow(registerFlow)
-        }
-        await flowDynamic('Thanks!')
-        return
-    }
-)
-
 const registerAskFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_ASK_FLOW'))
-.addAnswer(`Ingrese el turno del alumno?`, { capture: true }, async (ctx, { state }) => {
+.addAnswer(`Ingrese el nombre del alumno`, { capture: true }, async (ctx, { state }) => {
+    await state.update({ name: ctx.body })
+})
+.addAnswer(`Ingrese el telf del alumno`, { capture: true }, async (ctx, { state }) => {
+    await state.update({ phone: ctx.body })
+})
+.addAnswer(`Ingrese el curso del alumno`, { capture: true }, async (ctx, { state }) => {
+    await state.update({ course: ctx.body })
+})
+.addAnswer(`Ingrese el turno del alumno`, { capture: true }, async (ctx, { state }) => {
     await state.update({ schedule: ctx.body })
+})
+.addAnswer(`Ingrese el duración matrícula del alumno(En meses)`, { capture: true }, async (ctx, { state }) => {
+    await state.update({ duration: ctx.body })
+})
+.addAnswer(`Ingrese el inicio matrícula del alumno\n(Usar Formato -> 01/01/2025)`, { capture: true }, async (ctx, { state }) => {
+    await state.update({ startDay: ctx.body })
+})
+.addAnswer(`Ingrese evidencia del pago`, { capture: true }, async (ctx, { state, provider }) => {
+    console.log("Entrooo")
+    console.log(JSON.stringify(ctx?.body))
+    const localPath = await provider.saveFile(ctx, {path:'./media'});
+    console.log(localPath)
+
+    var isPayed = true
+    if(ctx?.body?.trim() == '-')
+        isPayed = false;
+
+    await state.update({ isPayed: isPayed , photoEvidence: localPath })
+})
+.addAction(async (_, { flowDynamic, state }) => {
+    console.log(JSON.stringify(state.getMyState()))
+    await saveStudent(state.getMyState())
+    await flowDynamic(`${JSON.stringify(state.getMyState().payload)} la información se ingresó con éxito!`)
 });
 
 const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLOW'))
-    .addAnswer(`Ingrese la información del alumno?`, { capture: true }, async (ctx, { state, fallBack, gotoFlow }) => {
+    .addAnswer(`Ingrese la información del alumno`, { capture: true }, async (ctx, { state, fallBack, gotoFlow }) => {
         if(!shouldParse(ctx.body))
             return gotoFlow(registerAskFlow)
         const { student, error } = parseStudentData(ctx.body);
@@ -34,29 +53,66 @@ const registerFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLO
             return fallBack(error);
         }
 
-        await state.update({ student: JSON.stringify(student) })
+        await state.update({ payload: student })
     })
+    .addAnswer(`Ingrese evidencia del pago`, { capture: true }, async (ctx, { state, provider }) => {
+        console.log("Entrooo")
+        console.log(JSON.stringify(ctx?.body))
+        var isPayed = true
+        if(ctx?.body?.trim() == '-'){
+            await state.update({ isPayed: false , photoEvidence: null })
+            return;
+        }
+
+        console.log(JSON.stringify(ctx?.body))
+        const localPath = await provider.saveFile(ctx, {path:'./media'});
+        await state.update({ isPayed: isPayed , photoEvidence: localPath })
+    })    
     .addAction(async (_, { flowDynamic, state }) => {
-        console.log(state.get('student'))
-        await flowDynamic(`${state.get('student')}, thanks for your information!`)
+        console.log(state.get('payload'))
+        await flowDynamic(`${state.get('payload')}, thanks for your information!`)
+        console.log("RAAAA")
+        console.log(state.getMyState())
+        await saveStudent(state.getMyState())
+        await flowDynamic(`${JSON.stringify(state.getMyState().payload)} thanks for your information!`)  
     })
 
+
+const getStudentsFlow = addKeyword<Provider, Database>(utils.setEvent('GET_STUDENTS_FLOW'))
+.addAction(async (_, { flowDynamic, state }) => {
+    console.log('ENTROOO')
+    const students = await getStudents()
+    for (const student of students) { // Usa for...of para iterar
+        await flowDynamic(`${JSON.stringify(student)}`); // Espera que cada mensaje sea enviado
+    }
+})
+
 const welcomeFlow = addKeyword<Provider, Database>(EVENTS.WELCOME)
+    .addAnswer('Hola 🤖!! leyendo tu mensaje...')
     .addAction(
         async (ctx, { flowDynamic, fallBack, gotoFlow }) => {
             console.log(ctx.name)
             console.log('PROCESS COMMAND')
 
                 const responseCommand = await processCommand(ctx.body) 
+                console.log('LISTANDO COMMAND 1')
+                console.log(JSON.stringify(responseCommand))
 
                 if(responseCommand.type == CommandType.IGNORE)
                     return;
 
                 if(responseCommand.type == CommandType.ERROR)
                     return fallBack(responseCommand.message)
-                
+
+                console.log('LISTANDO COMMAND')
+
+                if(responseCommand.command == 'listarAlumnos')
+                    return gotoFlow(getStudentsFlow)
+
+                console.log('DONDE COMMAND')
+
                 console.log(responseCommand)  
-                await flowDynamic(`${responseCommand.message}`)
+                //await flowDynamic(`${responseCommand.message}`)
 
             return gotoFlow(registerFlow)
         }
@@ -74,7 +130,7 @@ const fullSamplesFlow = addKeyword<Provider, Database>(['samples', utils.setEven
     })
 
 const main = async () => {
-    const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
+    const adapterFlow = createFlow([welcomeFlow, registerFlow, getStudentsFlow])
     
     const adapterProvider = createProvider(Provider ,{
         writeMyself: 'host'

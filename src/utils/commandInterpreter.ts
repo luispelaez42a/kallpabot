@@ -9,6 +9,7 @@ const validCommands = [
   'renovarAlumno',
   'ventaProducto',
   'listar',
+  'listarAlumnos'
 ];
 
 const CommandType = {
@@ -62,40 +63,47 @@ const parseStudentData = (args) => {
   
       switch (keyTrimmed) {
         case 'curso':
-          acc.curso = value;
+          acc.course = value;
           break;
         case 'nombre':
-          acc.nombre = value;
+          acc.name = value;
           break;
+        case 'dni':
+          acc.dni = value;
+          break;            
+        case 'turno':
+          acc.schedule = value;
+          break;  
         case 'edad':
-          acc.edad = value ? parseInt(value.replace(/\D/g, ''), 10) : null;
+          acc.age = value ? parseInt(value.replace(/\D/g, ''), 10) : null;
           break;
         case 'telf':
-          acc.telefono = value.replace(/\D/g, '');
+          acc.phone = value.replace(/\D/g, '');
           break;
         case 'tiempo':
-          acc.tiempo = value.replace(/\D/g, '');
+          acc.duration = value.replace(/\D/g, '');
           break;  
         case 'inicio':
           try {
-            acc.fechaInicio = parseDate(value); // Utiliza el método para normalizar la fecha
+            acc.startDay = parseDate(value); // Utiliza el método para normalizar la fecha
           } catch (error) {
             acc.fechaInicioError = error.message; // Captura errores de fecha
           }
           break;
         default:
-          acc.otros.push({ key: keyTrimmed, value });
+          acc.others.push({ key: keyTrimmed, value });
           break;
       }
       return acc;
-    }, { curso: '', nombre: '', telefono: '', fechaInicio: '', edad: null, otros: [] });
+    }, { course: '', name: '', phone: '', startDay: '', age: null, others: [] });
   
     // Validar campos obligatorios
     const missingFields = [];
-    if (!data.curso) missingFields.push('Curso');
-    if (!data.nombre) missingFields.push('Nombre');
-    if (!data.telefono) missingFields.push('Número de Teléfono');
-    if (!data.fechaInicio) missingFields.push('Fecha de Inicio');
+    if (!data.course) missingFields.push('Curso');
+    if (!data.name) missingFields.push('Nombre');
+    if (!data.schedule) missingFields.push('Turno');
+    if (!data.phone) missingFields.push('Número de Teléfono');
+    if (!data.duration) missingFields.push('Duración del plan');
   
     if (missingFields.length > 0) {
       return { error: `Faltan campos obligatorios: ${missingFields.join(', ')}` };
@@ -155,7 +163,9 @@ const processCommand = async function processCommand(input) {
   // Procesar el comando
   switch (command) {
     case 'registrarAlumno':
-      return { type: CommandType.SUCCESS, message: `Registrando alumno con datos: ${args.join(' ')}` };
+      return { type: CommandType.SUCCESS, command: 'registrarAlumno', message: `Registrando alumno con datos: ${args.join(' ')}` };
+    case 'listarAlumnos':
+        return { type: CommandType.SUCCESS, command: 'listarAlumnos', message: `Registrando alumno con datos: ${args.join(' ')}` };      
     case 'registrarProducto':
       return { type: CommandType.SUCCESS, message: `Registrando producto con datos: ${args.join(' ')}` };
     case 'renovarAlumno':
