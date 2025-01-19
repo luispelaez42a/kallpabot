@@ -1,38 +1,56 @@
-/**
- * get students
- * @returns 
- */
-const getStudents = async (): Promise<any> => {
-    const studentsApi = await fetch('https://kallpa-admin-api.vercel.app/api/students')
-    const json: any[] = await studentsApi.json()
-
-    return json
-}
+import { CommandType } from "~/utils/commandInterpreter";
+import { fetchWithRetry } from "~/utils/retry";
 
 /**
- * add to Student
- * @param text 
- * @returns 
+ * Obtiene la lista de estudiantes
+ * @returns { type, message, data } o { type, message, error }
  */
-const saveStudent = async (state: any) => {
+const getStudents = async () => {
     try {
-        console.log("entro save")
+        const response = await fetchWithRetry(() =>
+            fetch("https://kallpadmin.vercel.app/api/students")
+        );
 
-        //const payload = JSON.parse(text)
-        console.log(state.payload)
-        console.log(JSON.stringify(state.payload))
-       
-        const dataApi = await fetch('https://kallpa-admin-api.vercel.app/api/students', {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(state.payload)
-        })
-        return dataApi
-    } catch (err) {
-        console.log(`error: `, err)
+        return response;
+    } catch (error: any) {
+        console.error("Error al obtener estudiantes:", error.message);
+        return {
+            type: CommandType.ERROR,
+            message: "Error al procesar la solicitud",
+            error: error.message,
+        };
     }
-}
+};
 
-export { getStudents, saveStudent }
+/**
+ * Agrega un estudiante
+ * @param state 
+ * @returns { type, message, data } o { type, message, error }
+ */
+const saveStudent = async (state: { payload: object }) => {
+    try {
+        console.log("Procesando registro del estudiante...");
+        console.log(JSON.stringify(state.payload))
+        const response = await fetchWithRetry(() =>
+            fetch("https://kallpadmin.vercel.app/api/students", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(state.payload),
+            })
+        );
+        console.log("===Respondio");
+        console.log(response);
+        return response;
+    } catch (error: any) {
+        console.error("Error al registrar estudiante:", error.message);
+        return {
+            type: CommandType.ERROR,
+            message: "Registro Fallido, intenta nuevamente",
+            error: error.message,
+        };
+    }
+};
+
+export { getStudents, saveStudent };
