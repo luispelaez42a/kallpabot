@@ -20,7 +20,7 @@ export const registerStudent = addKeyword<Provider, Database>(utils.setEvent('RE
     .addAnswer(`Ingrese evidencia del pago`, { capture: true }, async (ctx, { state, provider }) => {
         console.log("Entrooo")
         console.log(JSON.stringify(ctx?.body))
-        var isPayed = true
+        const isPayed = true
         if(ctx?.body?.trim() == '-'){
             await state.update({ isPayed: false , photoEvidence: null })
             return;

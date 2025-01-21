@@ -20,7 +20,7 @@ export const welcome = addKeyword<Provider, Database>(EVENTS.WELCOME)
                 return;
 
             if(responseCommand.type == CommandType.ERROR)
-                return flowDynamic(responseCommand.message)
+                return await flowDynamic(responseCommand.message)
         
             console.log('GO TO FLOW')
 

@@ -30,7 +30,7 @@ export const registerAskFlow = addKeyword<Provider, Database>(utils.setEvent('RE
     const localPath = await provider.saveFile(ctx, {path:'./media'});
     console.log(localPath)
 
-    var isPayed = true
+    let isPayed = true
     if(ctx?.body?.trim() == '-')
         isPayed = false;
 

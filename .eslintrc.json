@@ -20,7 +20,8 @@
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/ban-types": "off",
-      "no-unsafe-optional-chaining": "off"
+      "no-unsafe-optional-chaining": "off",
+      "builderbot/func-prefix-endflow-flowdynamic": "off"
     }
   }
   

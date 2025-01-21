@@ -11,9 +11,10 @@ import { registerStudent } from './flows/registerStudent'
 import Interpreter from './services/ai/interpreter'
 import { interpretsTransaction, registerMovement } from './flows/registerMovement'
 import { idleFlow } from './flows/idle-custom'
-
+import { config } from 'dotenv'
+config()
 const ai = new Interpreter(process.env.AI_KEY, 'gemini-1.5-flash')
-const PORT = process.env.PORT ?? 3008
+const PORT = process.env.PORT
 
 const main = async () => {
     const adapterFlow = createFlow([welcome, listStudents, listCommands, registerStudent, registerMovement, interpretsTransaction, idleFlow])
