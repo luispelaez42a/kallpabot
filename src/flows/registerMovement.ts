@@ -50,6 +50,7 @@ export const interpretsTransaction = addKeyword<Provider, Database>(utils.setEve
     console.log(JSON.stringify(currentState));
     const responseTrx = await interpreterAndSaveTransaction(currentState, extensions, currentState.isMultimedia || false)
     console.log(JSON.stringify(responseTrx))
+    state.clear();
     return endFlow(`${responseTrx.message}`);
 });
 
