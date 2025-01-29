@@ -5,7 +5,7 @@ export function isImageMimeType(mimeType) {
 
 export const TRANSACTION_MULTIMEDIA_PROMPT = `Analiza y clasifica la siguiente transacción utilizando la descripción: '{prompt}' y los datos extraídos automáticamente desde la imagen. Sigue estas reglas:
               Clasifica action como 'INCOME' (ingreso) o 'EXPENSE' (egreso).
-              Para type, selecciona uno de los valores permitidos: ['PROFESSOR_PAYMENT' (Pago Profesor), 'PRODUCT_SALE'(Venta Producto), 'SERVICE_PAYMENT'(Pago de Servicios), 'OTHER'].
+              Para type, selecciona uno de los valores permitidos: ['ENROLLMENT' (Registro de Matrículas), 'PROFESSOR_PAYMENT' (Pago Profesor), 'PRODUCT_SALE'(Venta Producto), 'SERVICE_PAYMENT'(Pago de Servicios), 'OTHER'].
               Para productType, selecciona uno de los valores permitidos: ['POWERADE', 'SAN_MARCOS', 'FRUGOS', 'GATORADE', 'SUEROX', 'OTHER'] estos valores los puedes inferir de description
               Asegúrate de extraer correctamente los siguientes campos desde el texto extraído:
               amount: monto en formato numérico (ej. 2.50).
@@ -31,7 +31,7 @@ export const TRANSACTION_MULTIMEDIA_PROMPT = `Analiza y clasifica la siguiente t
 
 export const TRANSACTION_TEXT_PROMPT = `Analiza y clasifica la siguiente transacción utilizando la descripción proporcionada por el usuario: '{prompt}'. Sigue estas reglas:
 Clasifica action como 'INCOME' (ingreso) o 'EXPENSE' (egreso).
-Para type, selecciona uno de los valores permitidos: ['PROFESSOR_PAYMENT' (Pago Profesor), 'PRODUCT_SALE'(Venta Producto), 'SERVICE_PAYMENT'(Pago de Servicios), 'OTHER'].
+Para type, selecciona uno de los valores permitidos: ['ENROLLMENT' (Registro de Matrículas), 'PROFESSOR_PAYMENT' (Pago Profesor), 'PRODUCT_SALE'(Venta Producto), 'SERVICE_PAYMENT'(Pago de Servicios), 'OTHER'].
 Para productType, selecciona uno de los valores permitidos: ['POWERADE', 'SAN_MARCOS', 'FRUGOS', 'GATORADE', 'SUEROX', 'OTHER'] estos valores los puedes inferir de description
 Asegúrate de extraer correctamente los siguientes campos desde el texto extraído:
 amount: monto en formato numérico (ej. 2.50).
