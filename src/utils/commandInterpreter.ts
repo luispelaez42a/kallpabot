@@ -4,6 +4,16 @@ import { validCommands } from './commands';
 
 const validPrefixes = ['@bot', '@kbot'];
 
+const transactionTypes = {
+  INCOME: "ingreso",
+  EXPENSE: "egreso"
+};
+
+export function translateTransactionType(type) {
+  if (!type) return "transacción"; 
+  return transactionTypes[type] || "transacción";
+}
+
 const CommandType = {
   ERROR: 'ERROR',
   SUCCESS: 'SUCCESS',
