@@ -3,6 +3,8 @@ export function isImageMimeType(mimeType) {
     return mimeType ? /^image\/.+$/.test(mimeType) : false;
   }
 
+const actualYear = new Date(). getFullYear();
+
 export const TRANSACTION_MULTIMEDIA_PROMPT = `Somos una academia deportiva, Analiza y clasifica la siguiente transacción utilizando la descripción: '{prompt}' y los datos extraídos automáticamente desde la imagen. Sigue estas reglas:
               action: Identifica de la descripción si dice Ingreso o Egreso. Selecciona uno de los valores permitidos: ['INCOME', 'EXPENSE'].
                 "INCOME": Ingreso de dinero. Esto incluye: ventas de productos, matrículas.
@@ -38,12 +40,12 @@ export const TRANSACTION_MULTIMEDIA_PROMPT = `Somos una academia deportiva, Anal
                 "type": "PROFESSOR_PAYMENT",
                 "productType": null,
                 "description": "Pago a profesor Juan Pérez por clases de natación",
-                "date": "2024-10-26T16:45:00",
+                "date": "2025-10-26T16:45:00",
                 "operation_number": "012",
                 "payment_method": "BANK_TRANSFER",
                 "phone_origin": "99"
               }
-              Si algún campo no está disponible, márcalo como null en el JSON.`
+              Si algún campo no está disponible, márcalo como null en el JSON. En caso de la imagen no se proporcione el año es: ${actualYear}`
 
 export const TRANSACTION_TEXT_PROMPT = `Analiza la siguiente transacción utilizando la descripción proporcionada por el usuario: '{prompt}'. Sigue estas reglas para asignar los campos al JSON a responder:
               action: Selecciona uno de los valores permitidos: ['INCOME', 'EXPENSE'].
@@ -82,4 +84,4 @@ export const TRANSACTION_TEXT_PROMPT = `Analiza la siguiente transacción utiliz
                 "payment_method": "BANK_TRANSFER",
                 "phone_origin": "99"
               }
-              Si algún campo no está disponible, márcalo como null en el JSON.`              
+              Si algún campo no está disponible, márcalo como null en el JSON. En caso de la imagen no se proporcione el año es: ${actualYear}`              
