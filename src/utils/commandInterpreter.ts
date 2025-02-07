@@ -5,8 +5,8 @@ import { validCommands } from './commands';
 const validPrefixes = ['@bot', '@kbot'];
 
 const transactionTypes = {
-  INCOME: "ingreso",
-  EXPENSE: "egreso"
+  INCOME: "Ingreso",
+  EXPENSE: "Egreso"
 };
 
 export function translateTransactionType(type) {

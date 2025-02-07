@@ -27,7 +27,7 @@ const saveTransaction = async (payload: string) => {
         console.log(response);
         return {
             type: CommandType.SUCCESS,
-            message: `✅ Listo!!! \n Registramos tu ${translateTransactionType(response?.data?.action)}: *${response?.data?.description} con monto: ${response?.data?.amount}* de forma exitosa`,
+            message: `✅ Listo!! \n Registramos tu transacción N° *${response?.data?.code}* \n *${response?.data?.description}* \n como *${translateTransactionType(response?.data?.action)}* con monto: *${response?.data?.amount}* de forma exitosa`,
             payload: response
         };
     } catch (error: any) {

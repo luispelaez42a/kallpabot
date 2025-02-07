@@ -48,20 +48,20 @@ export const interpretsTransaction = addKeyword<Provider, Database>(utils.setEve
     const currentState = state.getMyState();
     await flowDynamic(`🫡 Genial ${currentState.username}! Dame unos segundos para entender y registrar tu trx`)
     console.log(JSON.stringify(currentState));
-    const responseTrx = await interpreterAndSaveTransaction(currentState, extensions, currentState.isMultimedia || false)
+    const responseTrx = await interpreterAndSaveTransaction(ctx, currentState, extensions, currentState.isMultimedia || false)
     console.log(JSON.stringify(responseTrx))
     state.clear();
     return endFlow(`${responseTrx.message}`);
 });
 
-const interpreterAndSaveTransaction = async (currentState: any, extensions: any, isMultimedia = false) => {
+const interpreterAndSaveTransaction = async (ctx: any, currentState: any, extensions: any, isMultimedia = false) => {
     const interpreter = extensions.ai as Interpreter
     let response
     
     if(!currentState.localPath)
-        response = await interpreter.interprets(TRANSACTION_TEXT_PROMPT.replace(/\{prompt}/g, currentState.description));
+        response = await interpreter.interprets(TRANSACTION_TEXT_PROMPT.replace(/\{prompt}/g, currentState.description).replace(/\{phone_origin}/g, ctx.from));
     else 
-        response = await interpreter.interpretsMultimedia(currentState.localPath, "image/*", TRANSACTION_MULTIMEDIA_PROMPT.replace(/\{prompt}/g, currentState.description));
+        response = await interpreter.interpretsMultimedia(currentState.localPath, "image/*", TRANSACTION_MULTIMEDIA_PROMPT.replace(/\{prompt}/g, currentState.description).replace(/\{phone_origin}/g, ctx.from));
 
     if(response.type == CommandType.ERROR) {
         return response;
