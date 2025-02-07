@@ -3,7 +3,7 @@ import { createBot, createProvider, createFlow, addKeyword, utils, EVENTS } from
 import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { processCommand, parseStudentData, CommandType, shouldParse } from '../utils/commandInterpreter'
-import { saveStudent } from "src/services/Students";
+/*import { saveStudent } from "~/services/students";
 import { registerAskFlow } from './registerAsk'
 
 export const registerStudent = addKeyword<Provider, Database>(utils.setEvent('REGISTER_FLOW'))
@@ -47,4 +47,4 @@ export const registrarAlumno = (args) => {
         message: `Registrando alumno con datos: ${args.join(' ')}`,
         additionalData: 'Aquí puedes agregar más datos si lo necesitas'
     };
-};
+};*/

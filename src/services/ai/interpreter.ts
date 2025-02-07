@@ -5,6 +5,8 @@ import {
 } from "@google/generative-ai";
 import fs from "fs";
 import { CommandType } from "~/utils/commandInterpreter";
+import { fetchWithAIRetry, fetchWithRetry } from "~/utils/retry";
+import { DEFAULT_ERROR_MESSAGE_BOT } from "~/utils/utils";
 
 class Interpreter {
   private readonly ai: any;
@@ -45,7 +47,42 @@ class Interpreter {
     };
   }
 
-  interprets = async (
+  async interprets(
+    prompt: string,
+    history: any[] = [],
+    pathMultimedia?: string,
+    mimeType?: string,
+    temperature = 0
+  ) {
+    try {
+      // Decide si invocar interpretsText o interpretsMultimedia
+      const response = await fetchWithAIRetry(async () => {
+        if (pathMultimedia && mimeType) {
+          console.log("Entro multimedia AI")
+          // Llama a interpretsMultimedia si se proporcionan parámetros multimedia
+          return await this.interpretsMultimedia(pathMultimedia, mimeType, prompt);
+        } else {
+          // Llama a interpretsText por defecto
+          return await this.interpretsText(prompt, history, temperature);
+        }
+      });
+  
+      return response;
+    } catch (error) {
+      console.error(error);
+      return {
+        type: CommandType.ERROR,
+        status: error.status,
+        statusText: error.statusText,
+        message:
+          "❌ Problemas entendiendo lo que me comentas ¿Podrías repetirlo? \n *Ingresa @bot rm*",
+        error: error.message,
+      };
+    }
+  }
+  
+
+  interpretsText =  async (
     prompt: string,
     history: any[] = [],
     temperature = 0
@@ -78,8 +115,9 @@ class Interpreter {
       console.error(error);
       return {
         type: CommandType.ERROR,
-        message:
-          "❌ Problemas entendiendo lo que me comentas ¿Podrías repetirlo? \n *Ingresa @bot rm*",
+        status: error.status,
+        statusText: error.statusText,
+        message: DEFAULT_ERROR_MESSAGE_BOT,
         error: error.message,
       };
     }
@@ -92,14 +130,16 @@ class Interpreter {
     temperature = 0
   ) => {
     try {
-      const audioPart = this.fileToGenerativePart(pathMultimedia, mimeType);
+      const mediaPart = this.fileToGenerativePart(pathMultimedia, mimeType);
 
       console.log("==== PROMPT");
       console.log(prompt);
+      console.log(pathMultimedia);
+      console.log(mimeType);
 
       const result = await this.interpreter.generateContent([
         prompt,
-        audioPart,
+        mediaPart,
       ]);
       const response = result.response;
       console.log(JSON.stringify(response));
@@ -114,7 +154,9 @@ class Interpreter {
       console.error(error);
       return {
         type: CommandType.ERROR,
-        message: "No pude entenderlo, intenta nuevamente por favor",
+        status: error.status,
+        statusText: error.statusText,
+        message: DEFAULT_ERROR_MESSAGE_BOT,
         error: error.message,
       };
     }

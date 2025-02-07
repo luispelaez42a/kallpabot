@@ -3,20 +3,20 @@ import { createBot, createProvider, createFlow, addKeyword, utils, EVENTS } from
 import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { processCommand, parseStudentData, CommandType, shouldParse } from './utils/commandInterpreter'
-import { saveStudent, getStudents } from "src/services/Students";
 import { welcome } from './flows/welcome'
-import { listStudents } from './flows/listStudents'
-import { listCommands } from './flows/listCommands'
-import { registerStudent } from './flows/registerStudent'
 import Interpreter from './services/ai/interpreter'
-import { interpretsTransaction, registerMovement } from './flows/registerMovement'
+import { interpretsTransaction, registerMovement, registerMovementPendingDescription } from './flows/registerMovement'
 import { idleFlow } from './flows/idle-custom'
 import { config } from 'dotenv'
+import { media } from './flows/media'
+import { defaultWelcome } from './flows/defaultWelcomeFlow'
+import { listCommands } from './utils/commands'
 config()
 const ai = new Interpreter(process.env.AI_KEY, 'gemini-2.0-flash-lite-preview-02-05')
 const PORT = process.env.PORT
 const main = async () => {
-    const adapterFlow = createFlow([welcome, listStudents, listCommands, registerStudent, registerMovement, interpretsTransaction, idleFlow])
+    const adapterFlow = createFlow([welcome, listCommands, registerMovement, interpretsTransaction,
+                                     idleFlow, media, defaultWelcome, registerMovementPendingDescription])
     
     const adapterProvider = createProvider(Provider ,{
         writeMyself: 'host'

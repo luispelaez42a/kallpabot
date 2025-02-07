@@ -2,8 +2,8 @@ import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils, EVENTS } from '@builderbot/bot'
 import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
-import { getStudents } from "src/services/Students";
-import { CommandType } from '~/utils/commandInterpreter';
+import { getStudents } from "~/services/students";
+/*import { CommandType } from '~/utils/commandInterpreter';
 
 export const listStudents = addKeyword<Provider, Database>(utils.setEvent('GET_STUDENTS_FLOW'))
 .addAction(async (_, { flowDynamic, state }) => {
@@ -21,5 +21,5 @@ export const listStudents = addKeyword<Provider, Database>(utils.setEvent('GET_S
         console.error('Error: Los datos obtenidos no son válidos o no es una lista.');
         await flowDynamic('No se pudo obtener la lista de estudiantes.');
     }
-})
+})*/
   

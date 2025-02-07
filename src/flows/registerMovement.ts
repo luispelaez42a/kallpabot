@@ -8,15 +8,15 @@ import { saveTransaction } from '~/services/transactions'
 import { isImageMimeType, TRANSACTION_MULTIMEDIA_PROMPT, TRANSACTION_TEXT_PROMPT } from '~/utils/utils'
 import { reset, start, stop } from './idle-custom'
 
-export const registerMovement = addKeyword<Provider, Database>(utils.setEvent('REGISTER_MOVEMENT'))
+export const registerMovement = addKeyword<Provider, Database>(['@bot', '@kbot'])
 .addAction(async (ctx, { gotoFlow }) => start(ctx, gotoFlow, 120))
 .addAnswer(`🫡 Ingrese su transacción (Puedes ingresar una foto o un texto) \n 📷 *Si es una foto, esta debe indicar el monto como mínimo* \n 📝 *Si es solo texto debe indicar como mínimo el monto, si es ingreso o egreso y una breve descripción* \n Ejm: *Egreso Pago Profesor Luis S/200*`
-    , { capture: true }, async (ctx, { state, provider, flowDynamic, gotoFlow }) => {
+    , { capture: true }, async (ctx, { state, provider, gotoFlow }) => {
     const to = ctx.name
     console.log(ctx.from + " : " + to)
     console.log(JSON.stringify(ctx));
     reset(ctx, gotoFlow, 60)
-    if(!isImageMimeType(ctx?.message?.imageMessage?.mimetype)){
+    if(!isImageMimeType(ctx?.message?.imageMessage?.mimetype)) {
         await state.update({ username: to, description: ctx.body })
         return gotoFlow(interpretsTransaction)
     }
@@ -33,17 +33,25 @@ export const registerMovement = addKeyword<Provider, Database>(utils.setEvent('R
     }
     await state.update({ username: to, localPath: localPath })
 
+    return gotoFlow(registerMovementPendingDescription);
 })
+
+
+export const registerMovementPendingDescription = addKeyword<Provider, Database>(utils.setEvent('REGISTER_MOVEMENT_PENDING_DESCRIPTION'))
+//.addAction(async (ctx, { gotoFlow }) => reset(ctx, gotoFlow, 60))
 .addAnswer(`Ingrese descripción (*Indicar si es ingreso o egreso*, ejm: *Egreso Pago Profesor Victor*)`, { capture: true }, async (ctx, { state, gotoFlow }) => {
+    console.log("descripción victor pasooo")
     await state.update({ description: ctx.body })
 })
 .addAction(async (_, { gotoFlow }) => {
+    console.log("Interptres")
     return gotoFlow(interpretsTransaction);
 });
 
 
 export const interpretsTransaction = addKeyword<Provider, Database>(utils.setEvent('INTERPRETS_TRANSACTION'))
 .addAction(async (ctx, { flowDynamic, state, extensions, endFlow }) => {
+    console.log("pasoooo interpretsTransaction")
     stop(ctx);
     const currentState = state.getMyState();
     await flowDynamic(`🫡 Genial ${currentState.username}! Dame unos segundos para entender y registrar tu trx`)
@@ -57,11 +65,11 @@ export const interpretsTransaction = addKeyword<Provider, Database>(utils.setEve
 const interpreterAndSaveTransaction = async (ctx: any, currentState: any, extensions: any, isMultimedia = false) => {
     const interpreter = extensions.ai as Interpreter
     let response
+    const prompt = TRANSACTION_MULTIMEDIA_PROMPT
+    .replace(/\{prompt}/g, currentState.description)
+    .replace(/\{phone_origin}/g, ctx.from)
     
-    if(!currentState.localPath)
-        response = await interpreter.interprets(TRANSACTION_TEXT_PROMPT.replace(/\{prompt}/g, currentState.description).replace(/\{phone_origin}/g, ctx.from));
-    else 
-        response = await interpreter.interpretsMultimedia(currentState.localPath, "image/*", TRANSACTION_MULTIMEDIA_PROMPT.replace(/\{prompt}/g, currentState.description).replace(/\{phone_origin}/g, ctx.from));
+    response = await interpreter.interprets(prompt, [], currentState.localPath, "image/*");
 
     if(response.type == CommandType.ERROR) {
         return response;

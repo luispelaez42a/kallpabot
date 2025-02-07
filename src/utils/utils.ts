@@ -3,6 +3,9 @@ export function isImageMimeType(mimeType) {
     return mimeType ? /^image\/.+$/.test(mimeType) : false;
   }
 
+export const MEDIA_COMMAND = "@bot media"
+export const DEFAULT_ERROR_MESSAGE_BOT = "❌ Problemas entendiendo lo que me comentas ¿Podrías repetirlo? \n *Ingresa @bot rm*"
+
 const actualYear = new Date(). getFullYear();
 
 export const TRANSACTION_MULTIMEDIA_PROMPT = `Somos una academia deportiva, Analiza y clasifica la siguiente transacción utilizando la descripción: '{prompt}' y los datos extraídos automáticamente desde la imagen. Sigue estas reglas:

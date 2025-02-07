@@ -1,6 +1,7 @@
 import { parse, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { validCommands } from './commands';
+import { CommandType } from './commandEnum';
 
 const validPrefixes = ['@bot', '@kbot'];
 
@@ -13,12 +14,6 @@ export function translateTransactionType(type) {
   if (!type) return "transacción"; 
   return transactionTypes[type] || "transacción";
 }
-
-const CommandType = {
-  ERROR: 'ERROR',
-  SUCCESS: 'SUCCESS',
-  IGNORE: 'IGNORE',
-};
 
 const parseDate = (input) => {
     const formats = [
@@ -48,7 +43,7 @@ const parseDate = (input) => {
 };
 
 // Valida si el prefijo es válido
-const validateCommand = (prefix) => validPrefixes.includes(prefix);
+export const validateCommand = (prefix) => validPrefixes.includes(prefix);
 const shouldParse = (input) => {
     // Si la entrada contiene más de una línea, debe parsearse
     const lines = input.split('\n');
@@ -210,10 +205,14 @@ const parseRenewAlumno = (input) => {
     return data;
 };
 
+export function splitInput(input:String) {
+  return input.trim().split(/\s+/);
+}
+
 // Procesador de comandos
-const processCommand = async function processCommand(input) {
+const processCommand = async function processCommand(input, isMultimedia = false) {
   // Divide la entrada en palabras
-  const [prefix, command, ...args] = input.trim().split(/\s+/);
+  const [prefix, command, ...args] = splitInput(input);
 
   // Validar el prefijo
   if (!validateCommand(prefix)) {
