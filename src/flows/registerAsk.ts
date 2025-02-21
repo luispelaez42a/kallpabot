@@ -3,7 +3,7 @@ import { createBot, createProvider, createFlow, addKeyword, utils, EVENTS } from
 import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { processCommand, parseStudentData, CommandType, shouldParse } from '../utils/commandInterpreter'
-import { saveStudent } from "~/services/students";
+import { saveStudent } from "~/services/Students";
 
 export const registerAskFlow = addKeyword<Provider, Database>(utils.setEvent('REGISTER_ASK_FLOW'))
 .addAnswer(`Ingrese el nombre del alumno`, { capture: true }, async (ctx, { state }) => {

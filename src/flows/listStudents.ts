@@ -2,7 +2,7 @@ import { join } from 'path'
 import { createBot, createProvider, createFlow, addKeyword, utils, EVENTS } from '@builderbot/bot'
 import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
-import { getStudents } from "~/services/students";
+//import { getStudents } from "~/services/students";
 /*import { CommandType } from '~/utils/commandInterpreter';
 
 export const listStudents = addKeyword<Provider, Database>(utils.setEvent('GET_STUDENTS_FLOW'))
