@@ -6,8 +6,6 @@ export function isImageMimeType(mimeType) {
 export const MEDIA_COMMAND = "@bot media"
 export const DEFAULT_ERROR_MESSAGE_BOT = "❌ Problemas entendiendo lo que me comentas ¿Podrías repetirlo? \n *Ingresa @bot rm*"
 
-const actualYear = new Date(). getFullYear();
-
 export const TRANSACTION_MULTIMEDIA_PROMPT = `Somos una academia deportiva, Analiza y clasifica la siguiente transacción utilizando la descripción: '{prompt}' y los datos extraídos automáticamente desde la imagen. Sigue estas reglas:
               action: Identifica de la descripción si dice Ingreso o Egreso. Selecciona uno de los valores permitidos: ['INCOME', 'EXPENSE'].
                 "INCOME": Ingreso de dinero. Esto incluye: ventas de productos, matrículas.
@@ -48,7 +46,7 @@ export const TRANSACTION_MULTIMEDIA_PROMPT = `Somos una academia deportiva, Anal
                 "payment_method": "BANK_TRANSFER",
                 "phone_origin": "99"
               }
-              Si algún campo no está disponible, márcalo como null en el JSON. En caso de la imagen no se proporcione el año es: ${actualYear}`
+              Si algún campo no está disponible, márcalo como null en el JSON. En caso de la imagen no se proporcione la fecha es: {defaultDate}`
 
 export const TRANSACTION_TEXT_PROMPT = `Analiza la siguiente transacción utilizando la descripción proporcionada por el usuario: '{prompt}'. Sigue estas reglas para asignar los campos al JSON a responder:
               action: Selecciona uno de los valores permitidos: ['INCOME', 'EXPENSE'].
@@ -87,4 +85,4 @@ export const TRANSACTION_TEXT_PROMPT = `Analiza la siguiente transacción utiliz
                 "payment_method": "BANK_TRANSFER",
                 "phone_origin": "99"
               }
-              Si algún campo no está disponible, márcalo como null en el JSON. En caso de la imagen no se proporcione el año es: ${actualYear}`              
+              Si algún campo no está disponible, márcalo como null en el JSON. En caso no se proporcione la fecha es: {defaultDate}`              

@@ -1,4 +1,4 @@
-import { join } from 'path'
+import { DateTime } from "luxon";
 import { createBot, createProvider, createFlow, addKeyword, utils, EVENTS } from '@builderbot/bot'
 import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
@@ -64,10 +64,13 @@ export const interpretsTransaction = addKeyword<Provider, Database>(utils.setEve
 
 const interpreterAndSaveTransaction = async (ctx: any, currentState: any, extensions: any, isMultimedia = false) => {
     const interpreter = extensions.ai as Interpreter
+    const defaultDate = DateTime.now().setZone("America/Lima").toISO({ suppressMilliseconds: true });
+
     let response
     const prompt = TRANSACTION_MULTIMEDIA_PROMPT
     .replace(/\{prompt}/g, currentState.description)
     .replace(/\{phone_origin}/g, ctx.from)
+    .replace(/\{defaultDate}/g, defaultDate)
     
     response = await interpreter.interprets(prompt, [], currentState.localPath, "image/*");
 
