@@ -12,7 +12,7 @@ import { media } from './flows/media'
 import { defaultWelcome } from './flows/defaultWelcomeFlow'
 import { listCommands } from './utils/commands'
 config()
-const ai = new Interpreter(process.env.AI_KEY, 'gemini-2.0-flash-lite-preview-02-05')
+const ai = new Interpreter(process.env.AI_KEY, 'gemini-2.0-pro-exp-02-05')
 const PORT = process.env.PORT
 const main = async () => {
     const adapterFlow = createFlow([welcome, listCommands, registerMovement, interpretsTransaction,
