@@ -5,21 +5,27 @@ import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { processCommand, parseStudentData, CommandType, shouldParse } from '../utils/commandInterpreter'
 import { validCommands } from '~/utils/commands'
 import { defaultWelcome } from './defaultWelcomeFlow'
-
+/*import muteLayer from '~/layers/mute.layer'
+import conversationalLayer from '~/layers/conversational.layer'
+import mainLayer from '~/layers/main.layer'
+*/
 export const welcome = addKeyword<Provider, Database>(EVENTS.WELCOME)
-    .addAction(
+ /*   .addAction(muteLayer)
+    .addAction(conversationalLayer)
+    .addAction(mainLayer)
+   .addAction(
         async (ctx, { flowDynamic, gotoFlow, endFlow }) => {
             console.log("ENTRO WELCOME")
 
             console.log(ctx.name)
             console.log(JSON.stringify(ctx))
-/*
+
             console.log('PROCESS COMMAND')
             const responseCommand = await processCommand(ctx.body);
             console.log('LISTANDO COMMAND 1')
             console.log(JSON.stringify(responseCommand))
             handleCommandResponse(responseCommand, flowDynamic, gotoFlow);
-*/
+
             console.log('LISTANDO COMMAND 1')
 
             if (isDefaultUser(ctx.from)) {
@@ -59,5 +65,5 @@ async function handleCommandResponse(
             await gotoFlow(responseCommand.flow);
             break;
     }
-}
+}*/
     
