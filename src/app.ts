@@ -10,14 +10,20 @@ import { idleFlow } from './flows/idle-custom'
 import { config } from 'dotenv'
 import { media } from './flows/media'
 import { defaultWelcome } from './flows/defaultWelcomeFlow'
+//import { balanceFoodInfo, defaultWelcome, gymInfo, swimmingAdultInfo, swimmingInfo } from './flows/defaultWelcomeFlow'
 import { listCommands } from './utils/commands'
+//import { sellerFlow } from './flows/seller'
+//import { enrollmentFlow } from './flows/enrollment'
 config()
-const ai = new Interpreter(process.env.AI_KEY, 'gemini-2.0-pro-exp-02-05')
+const ai = new Interpreter(process.env.AI_KEY, process.env.AI_MODEL)
 const PORT = process.env.PORT
 const main = async () => {
-    const adapterFlow = createFlow([welcome, listCommands, registerMovement, interpretsTransaction,
-                                     idleFlow, media, defaultWelcome, registerMovementPendingDescription])
+    /*const adapterFlow = createFlow([welcome, listCommands, registerMovement, interpretsTransaction,
+                                     idleFlow, media, defaultWelcome, registerMovementPendingDescription, sellerFlow, enrollmentFlow,
+                                     swimmingInfo, balanceFoodInfo, gymInfo, swimmingAdultInfo])*/
     
+    const adapterFlow = createFlow([welcome, listCommands, registerMovement, interpretsTransaction,
+    idleFlow, media, defaultWelcome, registerMovementPendingDescription])
     const adapterProvider = createProvider(Provider ,{
         writeMyself: 'host'
     })
