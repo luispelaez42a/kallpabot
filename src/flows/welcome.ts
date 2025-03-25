@@ -5,15 +5,15 @@ import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { processCommand, parseStudentData, CommandType, shouldParse } from '../utils/commandInterpreter'
 import { validCommands } from '~/utils/commands'
 import { defaultWelcome } from './defaultWelcomeFlow'
-/*import muteLayer from '~/layers/mute.layer'
-import conversationalLayer from '~/layers/conversational.layer'
-import mainLayer from '~/layers/main.layer'
-*/
+//import muteLayer from '~/layers/mute.layer'
+//import conversationalLayer from '~/layers/conversational.layer'
+//import mainLayer from '~/layers/main.layer'
+
 export const welcome = addKeyword<Provider, Database>(EVENTS.WELCOME)
- /*   .addAction(muteLayer)
+/*    .addAction(muteLayer)
     .addAction(conversationalLayer)
-    .addAction(mainLayer)
-   .addAction(
+    .addAction(mainLayer)*/
+    .addAction(
         async (ctx, { flowDynamic, gotoFlow, endFlow }) => {
             console.log("ENTRO WELCOME")
 
@@ -30,7 +30,7 @@ export const welcome = addKeyword<Provider, Database>(EVENTS.WELCOME)
 
             if (isDefaultUser(ctx.from)) {
                 console.log("Logs holaa default");
-                return gotoFlow(defaultWelcome);
+                //return gotoFlow(defaultWelcome);
             }
 
 
@@ -65,5 +65,5 @@ async function handleCommandResponse(
             await gotoFlow(responseCommand.flow);
             break;
     }
-}*/
+}
     

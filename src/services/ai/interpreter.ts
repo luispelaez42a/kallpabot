@@ -96,7 +96,7 @@ class Interpreter {
       };
 
       console.log(`Prompt: [${JSON.stringify(prompt)}]`);
-      //console.log(`History Final: [${JSON.stringify(history)}]`);
+      console.log(`History Final: [${JSON.stringify(history)}]`);
       const chat = this.interpreter.startChat({
         generationConfig,
         safetySettings: this.safetySettings,

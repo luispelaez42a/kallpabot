@@ -4,6 +4,8 @@ import { MemoryDB as Database } from '@builderbot/bot'
 import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { processCommand, parseStudentData, CommandType, shouldParse, validateCommand, splitInput } from '../utils/commandInterpreter'
 import { MEDIA_COMMAND } from '~/utils/utils'
+import { start } from './idle-custom'
+import { typing } from '~/utils/presence'
 
 export const media = addKeyword<Provider, Database>(EVENTS.MEDIA)
     .addAction(
@@ -17,6 +19,9 @@ export const media = addKeyword<Provider, Database>(EVENTS.MEDIA)
             if (shouldEndFlow(ctx)) {
                 return endFlow();
             }
+
+            start(ctx, gotoFlow, 120)
+            await typing(ctx, provider)
 
             const responseCommand = await processCommand(MEDIA_COMMAND);
             console.log('LISTANDO COMMAND MEDIA')

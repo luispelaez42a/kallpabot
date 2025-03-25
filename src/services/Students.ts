@@ -7,10 +7,7 @@ import { fetchWithRetry } from "~/utils/retry";
  */
 const getStudents = async () => {
     try {
-        const response = await fetchWithRetry(() =>
-            fetch("https://kallpadmin.vercel.app/api/students")
-        );
-
+        const response = await fetchWithRetry(() => fetch("https://kallpadmin.vercel.app/api/students"));
         return response;
     } catch (error: any) {
         console.error("Error al obtener estudiantes:", error.message);

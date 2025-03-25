@@ -186,7 +186,7 @@ class Transactions {
       "INCOME": Ingreso de dinero. Esto incluye: ventas de productos, matrículas.
       "EXPENSE": Salida de dinero. Esto incluye: pagos a profesores, pagos de servicios (luz, agua, internet, etc.), compra de insumos.
     type: selecciona uno de los valores permitidos: ['ENROLLMENT' (Registro de Matrículas), 'PROFESSOR_PAYMENT' (Pago Profesor), 'PRODUCT_SALE'(Venta Producto), 'SERVICE_PAYMENT'(Pago de Servicios), 'OTHER'].
-    category: selecciona uno de los valores permitidos: ['GYM' (Gimnasio), 'SWIM' (Natación), 'BALANCE_FOOD'(BALANCE FOOD), 'AQUATLON'(Acuatlon), 'OTHER'].
+    category: selecciona uno de los valores permitidos: ['GYM' (Gimnasio), 'SWIM' (Natación), 'BALANCE_FOOD'(BALANCE FOOD), 'AQUATLON'(Acuatlon), 'PADDLE', 'OTHER'].
     location: selecciona uno de los valores permitidos: [ 'JM' (Jesús María), 'Callao'] Por Defecto es JM
     productType: selecciona uno de los valores permitidos: ['POWERADE', 'SAN_MARCOS', 'FRUGOS', 'GATORADE', 'SUEROX', 'OTHER'] estos valores los puedes inferir de description
     amount: monto en formato numérico (ej. 2.50).

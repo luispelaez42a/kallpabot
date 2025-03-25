@@ -5,8 +5,10 @@ import { BaileysProvider as Provider } from '@builderbot/provider-baileys'
 import { processCommand, parseStudentData, CommandType, shouldParse } from '../utils/commandInterpreter'
 import Interpreter from '~/services/ai/interpreter'
 import { saveTransaction } from '~/services/transactions'
-import { isImageMimeType, TRANSACTION_MULTIMEDIA_PROMPT, TRANSACTION_TEXT_PROMPT } from '~/utils/utils'
+import { isImageMimeType } from '~/utils/utils'
 import { reset, start, stop } from './idle-custom'
+import { Transactions } from "~/utils/prompts";
+import { typing } from "~/utils/presence";
 
 export const registerMovement = addKeyword<Provider, Database>(['@bot', '@kbot'])
 .addAction(async (ctx, { gotoFlow }) => start(ctx, gotoFlow, 120))
@@ -15,7 +17,7 @@ export const registerMovement = addKeyword<Provider, Database>(['@bot', '@kbot']
     const to = ctx.name
     console.log(ctx.from + " : " + to)
     console.log(JSON.stringify(ctx));
-    reset(ctx, gotoFlow, 60)
+    await typing(ctx, provider)
     if(!isImageMimeType(ctx?.message?.imageMessage?.mimetype)) {
         await state.update({ username: to, description: ctx.body })
         return gotoFlow(interpretsTransaction)
@@ -38,21 +40,19 @@ export const registerMovement = addKeyword<Provider, Database>(['@bot', '@kbot']
 
 
 export const registerMovementPendingDescription = addKeyword<Provider, Database>(utils.setEvent('REGISTER_MOVEMENT_PENDING_DESCRIPTION'))
-//.addAction(async (ctx, { gotoFlow }) => reset(ctx, gotoFlow, 60))
+.addAction(async (ctx, { gotoFlow }) => reset(ctx, gotoFlow, 60))
 .addAnswer(`Ingrese descripción (*Indicar si es ingreso o egreso*, ejm: *Egreso Pago Profesor Victor*)`, { capture: true }, async (ctx, { state, gotoFlow }) => {
-    console.log("descripción victor pasooo")
     await state.update({ description: ctx.body })
 })
 .addAction(async (_, { gotoFlow }) => {
-    console.log("Interptres")
     return gotoFlow(interpretsTransaction);
 });
 
 
 export const interpretsTransaction = addKeyword<Provider, Database>(utils.setEvent('INTERPRETS_TRANSACTION'))
-.addAction(async (ctx, { flowDynamic, state, extensions, endFlow }) => {
-    console.log("pasoooo interpretsTransaction")
+.addAction(async (ctx, { flowDynamic, state, extensions, provider, endFlow }) => {
     stop(ctx);
+    await typing(ctx, provider);
     const currentState = state.getMyState();
     await flowDynamic(`🫡 Genial ${currentState.username}! Dame unos segundos para entender y registrar tu trx`)
     console.log(JSON.stringify(currentState));
@@ -67,7 +67,7 @@ const interpreterAndSaveTransaction = async (ctx: any, currentState: any, extens
     const defaultDate = DateTime.now().setZone("America/Lima").toISO({ suppressMilliseconds: true });
 
     let response
-    const prompt = TRANSACTION_MULTIMEDIA_PROMPT
+    const prompt = Transactions.TRANSACTION_MULTIMEDIA_PROMPT
     .replace(/\{prompt}/g, currentState.description)
     .replace(/\{phone_origin}/g, ctx.from)
     .replace(/\{defaultDate}/g, defaultDate)
